@@ -7,3 +7,4 @@ gpu_conv
 cpu_gse
 .vs
 CMakeSettings.json
+cmake*
