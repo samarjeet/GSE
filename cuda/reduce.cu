@@ -43,6 +43,7 @@ __global__ void reduce_force<long long int, double>(const int n,
   unsigned int pos = blockIdx.x*blockDim.x + threadIdx.x;
   
   while (pos < n) {
+
     long long int val1 = data_in[pos];
     long long int val2 = data_in[pos + stride_in];
     long long int val3 = data_in[pos + stride_in*2];

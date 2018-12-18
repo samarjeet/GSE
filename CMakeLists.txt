@@ -1,17 +1,30 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.7)
 
+project(GSE VERSION 0.1.0
+        LANGUAGES CXX CUDA)
+find_package(CUDA REQUIRED)
 
-# it's all about target and properties
-# Targets model the components of you application. 
-# An executable is a target, a library is a target. 
-# Your application is built as a collection of targets that depend on and use each other.
+add_executable(gse cpu_gse.cpp gpu_gse.h  gpu_gse.cu   )
+target_sources(gse PUBLIC CpuEwaldDirect.cpp CpuEwaldDirect.h )
+target_sources(gse PUBLIC CpuEwaldRecip.cpp CpuEwaldRecip.h)
+#target_sources(gse PUBLIC )
+target_sources(gse PUBLIC  cuda/CudaEnergyVirial.cu)
+target_sources(gse PUBLIC cuda/cuda_utils.h cuda/cuda_utils.cu)
+target_sources(gse PUBLIC cuda/XYZQ.h cuda/XYZQ.cu cuda/XYZ.h )
+target_sources(gse PUBLIC cuda/CudaPMERecip.h cuda/CudaPMERecip.cu)
+target_sources(gse PUBLIC cuda/Force.h cuda/Force.cu)
+target_sources(gse PUBLIC cuda/CudaTopExcl.cu)
+target_sources(gse PUBLIC cuda/CudaNeighborList.cu)
+target_sources(gse PUBLIC cuda/CudaPMEDirectForce.cu)
+target_sources(gse PUBLIC cuda/CudaPMERecip.cu)
+target_sources(gse PUBLIC cuda/EnergyVirial.cpp)
+target_sources(gse PUBLIC cuda/Matrix3d.cu)
+target_sources(gse PUBLIC cuda/reduce.cu)
+target_sources(gse PUBLIC cuda/CudaNeighborListSort.cu)
+target_sources(gse PUBLIC cuda/CudaNeighborListBuild.cu)
+target_sources(gse PUBLIC cuda/CudaDirectForceKernels.cu)
 
-# Targets have properties. 
-# Properties of a target are the source files it’s built from, the compiler options it requires, the libraries it links against. 
-# In modern CMake you create a list of targets and define the necessary properties on them.
-
-project(GSE VERSION 0.1.0)
-
-add_library(GSE)
-
-
+## Add CUDA's NVTX and cufft libraries
+find_library( NVTX_LIBRARY nvToolsExt PATHS ENV LD_LIBRARY_PATH )
+target_link_libraries(gse ${NVTX_LIBRARY}  ${CUDA_CUFFT_LIBRARIES})
+#TARGET_LINK_LIBRARIES(gse ${CUDA_CUFFT_LIBRARIES})

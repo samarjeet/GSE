@@ -32,6 +32,9 @@ static const double INV_FORCE_SCALE_VIR_CPU = (double)1.0/(double)(1ll << 30);
 //
 // Double precision atomicAdd, copied from CUDA_C_Programming_Guide.pdf (ver 5.0)
 //
+
+#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600
+#else
 static __device__ double atomicAdd(double* address, double val) {
   unsigned long long int* address_as_ull = (unsigned long long int*)address;
   unsigned long long int old = *address_as_ull, assumed;
@@ -43,6 +46,7 @@ static __device__ double atomicAdd(double* address, double val) {
   } while (assumed != old);
   return __longlong_as_double(old);
 }
+#endif
 
 /*
 //

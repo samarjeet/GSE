@@ -12,6 +12,7 @@
 #include "CpuGaussCharge.h"
 #include "CpuGreensFuncG2.h"
 #include "CpuLES.h"
+#define CUDA_ON
 #ifdef CUDA_ON
 // CUDA
 #include "cuda/cuda_utils.h"
@@ -29,7 +30,7 @@
 
 //#define USE_GSE_R
 //#define USE_GSE_U
-#define USE_LES
+//#define USE_LES
 
 void test48K();
 void testRandom(const int numCoord, const double L, const int ngrid, const double sigma, const int order, unsigned seed);

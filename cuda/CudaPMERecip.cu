@@ -2468,7 +2468,8 @@ void CudaPMERecip<AT, CT, CT2>::init(int x0, int x1, int y0, int y1, int z0, int
   allocate<CT>(&data2, data_size);
 
   if (multi_gpu) {
-#if CUDA_VERSION >= 6000
+#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600
+// #if CUDA_VERSION >= 6000
     cufftCheck(cufftXtMalloc(r2c_plan, &multi_data, CUFFT_XT_FORMAT_INPLACE));
     host_data = new CT2[xsize*ysize*zsize];
     host_tmp = new CT[2*(xsize/2+1)*ysize*zsize];
@@ -2602,28 +2603,28 @@ void CudaPMERecip<AT, CT, CT2>::make_fft_plans() {
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_R2C, batch));
-    cufftCheck(cufftSetCompatibilityMode(x_r2c_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(x_r2c_plan, CUFFT_COMPATIBILITY_NATIVE));
     
     batch = nfftz_local*(nfftx_local/2+1);
     cufftCheck(cufftPlanMany(&y_c2c_plan, 1, &nffty_local,
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_C2C, batch));
-    cufftCheck(cufftSetCompatibilityMode(y_c2c_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(y_c2c_plan, CUFFT_COMPATIBILITY_NATIVE));
 
     batch = (nfftx_local/2+1)*nffty_local;
     cufftCheck(cufftPlanMany(&z_c2c_plan, 1, &nfftz_local,
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_C2C, batch));
-    cufftCheck(cufftSetCompatibilityMode(z_c2c_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(z_c2c_plan, CUFFT_COMPATIBILITY_NATIVE));
 
     batch = nffty_local*nfftz_local;
     cufftCheck(cufftPlanMany(&x_c2r_plan, 1, &nfftx_local,
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_C2R, batch));
-    cufftCheck(cufftSetCompatibilityMode(x_c2r_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(x_c2r_plan, CUFFT_COMPATIBILITY_NATIVE));
   } else if (fft_type == SLAB) {
     int batch;
     int nfftx_local = x1 - x0 + 1;
@@ -2637,21 +2638,21 @@ void CudaPMERecip<AT, CT, CT2>::make_fft_plans() {
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_R2C, batch));
-    cufftCheck(cufftSetCompatibilityMode(xy_r2c_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(xy_r2c_plan, CUFFT_COMPATIBILITY_NATIVE));
 
     batch = (nfftx_local/2+1)*nffty_local;
     cufftCheck(cufftPlanMany(&z_c2c_plan, 1, &nfftz_local,
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_C2C, batch));
-    cufftCheck(cufftSetCompatibilityMode(z_c2c_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(z_c2c_plan, CUFFT_COMPATIBILITY_NATIVE));
 
     batch = nfftz_local;
     cufftCheck(cufftPlanMany(&xy_c2r_plan, 2, n,
 			     NULL, 0, 0,
 			     NULL, 0, 0, 
 			     CUFFT_C2R, batch));
-    cufftCheck(cufftSetCompatibilityMode(xy_c2r_plan, CUFFT_COMPATIBILITY_NATIVE));
+    //cufftCheck(cufftSetCompatibilityMode(xy_c2r_plan, CUFFT_COMPATIBILITY_NATIVE));
     
   } else if (fft_type == BOX) {
     if (multi_gpu) {
@@ -2671,10 +2672,10 @@ void CudaPMERecip<AT, CT, CT2>::make_fft_plans() {
 #endif
     } else {
       cufftCheck(cufftPlan3d(&r2c_plan, nfftz, nffty, nfftx, CUFFT_R2C));
-      cufftCheck(cufftSetCompatibilityMode(r2c_plan, CUFFT_COMPATIBILITY_NATIVE));
+      //cufftCheck(cufftSetCompatibilityMode(r2c_plan, CUFFT_COMPATIBILITY_NATIVE));
 
       cufftCheck(cufftPlan3d(&c2r_plan, nfftz, nffty, nfftx, CUFFT_C2R));
-      cufftCheck(cufftSetCompatibilityMode(c2r_plan, CUFFT_COMPATIBILITY_NATIVE));
+      //cufftCheck(cufftSetCompatibilityMode(c2r_plan, CUFFT_COMPATIBILITY_NATIVE));
     }
   }
 
