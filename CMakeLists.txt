@@ -4,6 +4,7 @@ project(GSE VERSION 0.1.0
         LANGUAGES CXX CUDA)
 find_package(CUDA REQUIRED)
 
+set(CMAKE_BUILD_TYPE Debug)
 add_executable(gse cpu_gse.cpp gpu_gse.cu   )
 #target_sources(gse PUBLIC )
 

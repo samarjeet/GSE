@@ -1,23 +1,30 @@
 How to build
 -------------
 
-make [CUDA=off] [FFTW=off]
+mkdir build
+cd build
+cmake ..
+make 
+./gse -r r -L L -M M -sigma sigma -order order -seed seed
 
-Option CUDA=off switches off CUDA support and FFTW=off switches off FFTW support.
-
-To cleanup do:
-
-make clean
-
-Requirements
--------------
-C++ compiler
-FFTW library (optional)
-CUDA 5.0+ (optional, for SPME calculations)
-
-How to run
------------
-Usage: cpu_gse -r r -L L -M M -sigma sigma -order order -seed seed
+--Old --
+!make [CUDA=off] [FFTW=off]
+!
+!Option CUDA=off switches off CUDA support and FFTW=off switches off FFTW support.
+!
+!To cleanup do:
+!
+!make clean
+!
+!Requirements
+!-------------
+!C++ compiler
+!FFTW library (optional)
+!CUDA 5.0+ (optional, for SPME calculations)
+!
+!How to run
+!-----------
+!Usage: cpu_gse -r r -L L -M M -sigma sigma -order order -seed seed
 
 Where:
 r     = distance between pair of charges
