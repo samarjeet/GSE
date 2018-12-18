@@ -5,7 +5,7 @@
 !CMakeLists.txt
 !gpu_conv
 !cpu_gse
-.idea
+.idea*
 cmake*
 .vs
 CMakeSettings.json
