@@ -285,7 +285,7 @@ __forceinline__ __device__ int max_shmem(int val, const int wid, volatile int* s
 //
 __forceinline__ __device__ int bcast_shfl(int val, const int srclane) {
 #if __CUDA_ARCH__ >= 300
-  return __shfl(val, srclane);
+  return __shfl_sync(0xFFFFFFFF, val, srclane);
 #else
   return 0;
 #endif
@@ -615,9 +615,9 @@ __device__ void flush_jlist(const int wid, const int istart, const int iend,
     bool first = true;
     for (int j=0;j <= jend-jstart;j++) {
 #if __CUDA_ARCH__ >= 300
-      float xt = __shfl(xj, j);
-      float yt = __shfl(yj, j);
-      float zt = __shfl(zj, j);
+      float xt = __shfl_sync(0xFFFFFFFF, xj, j);
+      float yt = __shfl_sync(0xFFFFFFFF, yj, j);
+      float zt = __shfl_sync(0xFFFFFFFF, zj, j);
 #else
       float xt = sh_xyzj[j].x;
       float yt = sh_xyzj[j].y;
@@ -1677,9 +1677,9 @@ buildExclKernel(const int maxNumExcl, const int cellStart,
     bool first = true;
     for (int j=0;j <= jatomEnd-jatomStart;j++) {
 #if __CUDA_ARCH__ >= 300
-      float xt = __shfl(xj, j);
-      float yt = __shfl(yj, j);
-      float zt = __shfl(zj, j);
+      float xt = __shfl_sync(0xFFFFFFFF, xj, j);
+      float yt = __shfl_sync(0xFFFFFFFF, yj, j);
+      float zt = __shfl_sync(0xFFFFFFFF, zj, j);
 #else
       float xt = sh_xyzj[j].x;
       float yt = sh_xyzj[j].y;

@@ -30,3 +30,5 @@ target_sources(gse PUBLIC cuda/CudaDirectForceKernels.cu)
 ## Add CUDA's NVTX and cufft libraries
 find_library( NVTX_LIBRARY nvToolsExt PATHS ENV LD_LIBRARY_PATH )
 target_link_libraries(gse ${NVTX_LIBRARY}  ${CUDA_CUFFT_LIBRARIES})
+
+list (APPEND CUDA_NVCC_FLAGS -genconde arch=compute_61,code=sm_61 ${nvcc_host_flags})

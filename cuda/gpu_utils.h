@@ -370,8 +370,8 @@ __forceinline__ __device__
 void get_val(long long int &val, const int wid) {
   int lo = __double2loint( __longlong_as_double(val) );
   int hi = __double2hiint( __longlong_as_double(val) );
-  lo = __shfl(lo, wid);
-  hi = __shfl(hi, wid);
+  lo = __shfl_sync(0xFFFFFFFF, lo, wid);
+  hi = __shfl_sync(0xFFFFFFFF, hi, wid);
   val = __double_as_longlong(__hiloint2double(hi,lo));
 }
 #endif

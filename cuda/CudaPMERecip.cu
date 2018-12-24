@@ -1153,20 +1153,20 @@ __global__ void scalar_sum_ortho_kernel(const int nfft1, const int nfft2, const 
     volatile RecipVirial_t* sh_ev = (RecipVirial_t *)sh_prefac;
     // Reduce within warps
     for (int d=warpsize/2;d >= 1;d /= 2) {
-      energy += __hiloint2double(__shfl(__double2hiint(energy), tid+d),
-				 __shfl(__double2loint(energy), tid+d));
-      virial0 += __hiloint2double(__shfl(__double2hiint(virial0), tid+d),
-				  __shfl(__double2loint(virial0), tid+d));
-      virial1 += __hiloint2double(__shfl(__double2hiint(virial1), tid+d),
-				  __shfl(__double2loint(virial1), tid+d));
-      virial2 += __hiloint2double(__shfl(__double2hiint(virial2), tid+d),
-				  __shfl(__double2loint(virial2), tid+d));
-      virial3 += __hiloint2double(__shfl(__double2hiint(virial3), tid+d),
-				  __shfl(__double2loint(virial3), tid+d));
-      virial4 += __hiloint2double(__shfl(__double2hiint(virial4), tid+d),
-				  __shfl(__double2loint(virial4), tid+d));
-      virial5 += __hiloint2double(__shfl(__double2hiint(virial5), tid+d),
-				  __shfl(__double2loint(virial5), tid+d));
+      energy += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(energy), tid+d),
+				 __shfl_sync(0xFFFFFFFF, __double2loint(energy), tid+d));
+      virial0 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial0), tid+d),
+				  __shfl_sync(0xFFFFFFFF, __double2loint(virial0), tid+d));
+      virial1 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial1), tid+d),
+				  __shfl_sync(0xFFFFFFFF, __double2loint(virial1), tid+d));
+      virial2 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial2), tid+d),
+				  __shfl_sync(0xFFFFFFFF, __double2loint(virial2), tid+d));
+      virial3 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial3), tid+d),
+				  __shfl_sync(0xFFFFFFFF, __double2loint(virial3), tid+d));
+      virial4 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial4), tid+d),
+				  __shfl_sync(0xFFFFFFFF, __double2loint(virial4), tid+d));
+      virial5 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial5), tid+d),
+				  __shfl_sync(0xFFFFFFFF, __double2loint(virial5), tid+d));
     }
     // Reduce between warps
     // NOTE: this __syncthreads() is needed because we're using a single shared memory buffer
@@ -1190,20 +1190,20 @@ __global__ void scalar_sum_ortho_kernel(const int nfft1, const int nfft2, const 
       virial4 = (tid < blockDim.x/warpsize) ? sh_ev[tid].virial[4] : 0.0;
       virial5 = (tid < blockDim.x/warpsize) ? sh_ev[tid].virial[5] : 0.0;
       for (int d=warpsize/2;d >= 1;d /= 2) {
-	energy += __hiloint2double(__shfl(__double2hiint(energy), tid+d),
-				   __shfl(__double2loint(energy), tid+d));
-	virial0 += __hiloint2double(__shfl(__double2hiint(virial0), tid+d),
-				    __shfl(__double2loint(virial0), tid+d));
-	virial1 += __hiloint2double(__shfl(__double2hiint(virial1), tid+d),
-				    __shfl(__double2loint(virial1), tid+d));
-	virial2 += __hiloint2double(__shfl(__double2hiint(virial2), tid+d),
-				    __shfl(__double2loint(virial2), tid+d));
-	virial3 += __hiloint2double(__shfl(__double2hiint(virial3), tid+d),
-				    __shfl(__double2loint(virial3), tid+d));
-	virial4 += __hiloint2double(__shfl(__double2hiint(virial4), tid+d),
-				    __shfl(__double2loint(virial4), tid+d));
-	virial5 += __hiloint2double(__shfl(__double2hiint(virial5), tid+d),
-				    __shfl(__double2loint(virial5), tid+d));
+	energy += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(energy), tid+d),
+				   __shfl_sync(0xFFFFFFFF, __double2loint(energy), tid+d));
+	virial0 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial0), tid+d),
+				    __shfl_sync(0xFFFFFFFF, __double2loint(virial0), tid+d));
+	virial1 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial1), tid+d),
+				    __shfl_sync(0xFFFFFFFF, __double2loint(virial1), tid+d));
+	virial2 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial2), tid+d),
+				    __shfl_sync(0xFFFFFFFF, __double2loint(virial2), tid+d));
+	virial3 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial3), tid+d),
+				    __shfl_sync(0xFFFFFFFF, __double2loint(virial3), tid+d));
+	virial4 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial4), tid+d),
+				    __shfl_sync(0xFFFFFFFF, __double2loint(virial4), tid+d));
+	virial5 += __hiloint2double(__shfl_sync(0xFFFFFFFF, __double2hiint(virial5), tid+d),
+				    __shfl_sync(0xFFFFFFFF, __double2loint(virial5), tid+d));
       }
     }
     
@@ -1829,17 +1829,17 @@ __global__ void gather_force_4_ortho_kernel(const float4 *xyzq, const int ncoord
 #if __CUDA_ARCH__ >= 300
     const int i = threadIdx.x & 7;
 
-    f1 += __shfl(f1, i+4, 8);
-    f2 += __shfl(f2, i+4, 8);
-    f3 += __shfl(f3, i+4, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+4, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+4, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+4, 8);
 
-    f1 += __shfl(f1, i+2, 8);
-    f2 += __shfl(f2, i+2, 8);
-    f3 += __shfl(f3, i+2, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+2, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+2, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+2, 8);
 
-    f1 += __shfl(f1, i+1, 8);
-    f2 += __shfl(f2, i+1, 8);
-    f3 += __shfl(f3, i+1, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+1, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+1, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+1, 8);
 
     if (i == 0) {
       shmem[base].f1 = f1;
@@ -2070,17 +2070,17 @@ __global__ void gather_force_6_ortho_kernel(const float4 *xyzq, const int ncoord
 #if __CUDA_ARCH__ >= 300
     const int i = threadIdx.x & 7;
 
-    f1 += __shfl(f1, i+4, 8);
-    f2 += __shfl(f2, i+4, 8);
-    f3 += __shfl(f3, i+4, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+4, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+4, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+4, 8);
 
-    f1 += __shfl(f1, i+2, 8);
-    f2 += __shfl(f2, i+2, 8);
-    f3 += __shfl(f3, i+2, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+2, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+2, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+2, 8);
 
-    f1 += __shfl(f1, i+1, 8);
-    f2 += __shfl(f2, i+1, 8);
-    f3 += __shfl(f3, i+1, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+1, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+1, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+1, 8);
 
     if (i == 0) {
       shmem[base].f1 = f1;
@@ -2291,17 +2291,17 @@ __global__ void gather_force_8_ortho_kernel(const float4 *xyzq, const int ncoord
 #if __CUDA_ARCH__ >= 300
     const int i = threadIdx.x & 7;
 
-    f1 += __shfl(f1, i+4, 8);
-    f2 += __shfl(f2, i+4, 8);
-    f3 += __shfl(f3, i+4, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+4, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+4, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+4, 8);
 
-    f1 += __shfl(f1, i+2, 8);
-    f2 += __shfl(f2, i+2, 8);
-    f3 += __shfl(f3, i+2, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+2, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+2, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+2, 8);
 
-    f1 += __shfl(f1, i+1, 8);
-    f2 += __shfl(f2, i+1, 8);
-    f3 += __shfl(f3, i+1, 8);
+    f1 += __shfl_sync(0xFFFFFFFF, f1, i+1, 8);
+    f2 += __shfl_sync(0xFFFFFFFF, f2, i+1, 8);
+    f3 += __shfl_sync(0xFFFFFFFF, f3, i+1, 8);
 
     if (i == 0) {
       shmem[base].f1 = f1;

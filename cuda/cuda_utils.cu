@@ -478,6 +478,7 @@ void start_gpu(int numnode, int mynode, std::vector<int>& devices) {
 
 }
 
+
 void stop_gpu() {
   cudaCheck(cudaDeviceReset());
   gpu_ind = -1;
